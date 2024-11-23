@@ -1,49 +1,67 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 const EditTaskModal = ({ task, onSave, onClose }) => {
-  const [editedTask, setEditedTask] = useState({ ...task });
+  const [editedTask, setEditedTask] = useState(task);
 
   const handleChange = (e) => {
-    setEditedTask({ ...editedTask, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setEditedTask((prevTask) => ({ ...prevTask, [name]: value }));
   };
 
-  const handleSubmit = () => {
-    console.log("dfsdds")
+  const handleSave = () => {
     onSave(editedTask);
-    onClose();
   };
 
   return (
-    <div className="modal">
-      <h3>Edit Task</h3>
-      <input
-        name="title"
-        value={editedTask.title}
-        onChange={handleChange}
-        required
-      />
-      <textarea
-        name="description"
-        value={editedTask.description}
-        onChange={handleChange}
-      />
-      <input
-        name="dueDate"
-        type="date"
-        value={editedTask.dueDate}
-        onChange={handleChange}
-      />
-      <select
-        name="status"
-        value={editedTask.status}
-        onChange={handleChange}
-      >
-        <option value="Pending">Pending</option>
-        <option value="In Progress">In Progress</option>
-        <option value="Completed">Completed</option>
-      </select>
-      <button onClick={handleSubmit}>Save</button>
-      <button onClick={onClose}>Cancel</button>
+    <div className="modal show d-block">
+      <div className="modal-dialog">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title">Edit Task</h5>
+            <button className="btn-close" onClick={onClose}></button>
+          </div>
+          <div className="modal-body">
+            <input
+              type="text"
+              name="title"
+              className="form-control mb-3"
+              value={editedTask.title}
+              onChange={handleChange}
+            />
+            <textarea
+              name="description"
+              className="form-control mb-3"
+              value={editedTask.description}
+              onChange={handleChange}
+            ></textarea>
+            <input
+              type="date"
+              name="dueDate"
+              className="form-control mb-3"
+              value={editedTask.dueDate}
+              onChange={handleChange}
+            />
+            <select
+              name="status"
+              className="form-control mb-3"
+              value={editedTask.status}
+              onChange={handleChange}
+            >
+              <option value="Pending">Pending</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+          <div className="modal-footer">
+            <button className="btn btn-secondary" onClick={onClose}>
+              Cancel
+            </button>
+            <button className="btn btn-primary" onClick={handleSave}>
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

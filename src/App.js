@@ -1,47 +1,57 @@
-import React, { useState, useEffect } from 'react';
-import AddTaskForm from './components/addtask';
-import TaskList from './components/tasklist';
-import EditTaskModal from './components/EditTaskModal';
-import ConfirmDeleteModal from './components/deletetask';
+import React, { useState, useEffect } from "react";
+import AddTaskForm from "./components/addtask";
+import TaskList from "./components/tasklist";
+import EditTaskModal from "./components/EditTaskModal";
+import ConfirmDeleteModal from "./components/deletetask";
+
+function getLocalStorage() {
+  const list = localStorage.getItem("tasks");
+  if (list) {
+    return JSON.parse(list);
+  } else {
+    return [];
+  }
+}
 
 const App = () => {
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState(getLocalStorage());
   const [editingTask, setEditingTask] = useState(null);
   const [taskToDelete, setTaskToDelete] = useState(null);
 
+  // Save tasks to localStorage on every update
   useEffect(() => {
-    const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
-    setTasks(savedTasks);
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
+    localStorage.setItem("tasks", JSON.stringify(tasks));
   }, [tasks]);
 
-  const addTask = (task) => setTasks([...tasks, task]);
+  const addTask = (task) => {
+    const newTask = { id: Date.now(), ...task }; // Add a unique ID
+    setTasks([...tasks, newTask]);
+  };
 
   const saveTask = (editedTask) => {
-    setTasks(
-      tasks.map((task, index) =>
-        index === editingTask.index ? editedTask : task
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === editedTask.id ? editedTask : task
       )
     );
     setEditingTask(null);
   };
 
   const deleteTask = () => {
-    setTasks(tasks.filter((_, index) => index !== taskToDelete));
+    setTasks((prevTasks) =>
+      prevTasks.filter((task) => task.id !== taskToDelete)
+    );
     setTaskToDelete(null);
   };
 
   return (
-    <div className="App">
-      <h1>Task Tracker</h1>
+    <div className="App container">
+      <h1 className="text-center my-4">Task Tracker</h1>
       <AddTaskForm addTask={addTask} />
       <TaskList
         tasks={tasks}
-        onEdit={(index) => setEditingTask({ index, ...tasks[index] })}
-        onDelete={(index) => setTaskToDelete(index)}
+        onEdit={(task) => setEditingTask(task)}
+        onDelete={(taskId) => setTaskToDelete(taskId)}
       />
       {editingTask && (
         <EditTaskModal
